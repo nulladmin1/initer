@@ -13,6 +13,8 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('mode', help='Picks the code mode from config file.')
 
+args = parser.parse_args()
+
 
 def get_config() -> yaml.YAMLObject:
     if path.isdir(CONF_DIR_LOCATION):
@@ -43,5 +45,8 @@ def config_download(configuration: yaml.YAMLObject, code_mode: str):
 
 
 config = get_config()
-config_download(config, 'Python')
-config_exec(config, 'Python')
+
+mode = args.mode.lower().capitalize()
+
+config_download(config, mode)
+config_exec(config, mode)
