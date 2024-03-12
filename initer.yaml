@@ -12,5 +12,5 @@ Modes:
     download:
       - "https://github.com/github/gitignore/blob/main/Rust.gitignore"
     exec:
-      - "cargo init ."
+      - "cargo init . --name example"
       - "mv Rust.gitignore .gitignore"
