@@ -1,0 +1,16 @@
+Settings:
+  Verbose: False
+
+Modes:
+  Python:
+    download:
+      - "https://raw.githubusercontent.com/github/gitignore/main/Python.gitignore"
+    exec:
+      - "echo Hello"
+      - 'mv Python.gitignore .gitignore'
+  Rust:
+    download:
+      - "https://github.com/github/gitignore/blob/main/Rust.gitignore"
+    exec:
+      - "cargo init ."
+      - "mv Rust.gitignore .gitignore"
