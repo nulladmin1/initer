@@ -1,25 +1,39 @@
 {
-  description = "Default Python Flake";
+  description = "Initer";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    poetry2nix.url = "github:nix-community/poetry2nix";
   };
 
-  outputs = { self, nixpkgs }: 
-  let
-    system = "x86_64-linux";
-    pkgs = nixpkgs.legacyPackages.${system};
-  in
-  {
-    devShells.${system}.default = 
-      pkgs.mkShell
-        {
-          buildInputs = with pkgs; [
-            # Python packages
-            python311
-            python311Packages.requests
-            python311Packages.pyyaml
-          ];
-        };
+  outputs = {
+    self,
+    nixpkgs,
+    poetry2nix,
+  }: let
+    systems = ["x86_64-linux" "x86_64-darwin" "aarch64-linux" "aarch64-darwin"];
+    forEachSystem = nixpkgs.lib.genAttrs systems;
+    pkgs = forEachSystem (system: import nixpkgs {inherit system;});
+  in {
+    formatter = forEachSystem (system: nixpkgs.legacyPackages.${system}.alejandra);
+
+    devShells = forEachSystem (system: {
+      default = pkgs.${system}.mkShell {
+        packages = with pkgs.${system}; [
+          python3
+          poetry
+        ];
+      };
+    });
+
+    apps = forEachSystem (system: let
+      inherit (poetry2nix.lib.mkPoetry2Nix {pkgs = pkgs.${system};}) mkPoetryApplication;
+      initer = mkPoetryApplication {projectDir = ./.;};
+    in {
+      default = {
+        type = "app";
+        program = "${initer}/bin/initer";
+      };
+    });
   };
 }
